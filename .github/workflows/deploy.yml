@@ -18,10 +18,10 @@ jobs:
       - name: SSH Deploy
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{secrets.HOST}}
-          username: ${{secrets.USERNAME}}
-          key: ${{secrets.KEY}}
-          port: ${{secrets.PORT}}
+          host: ${{secrets.SERVER_HOST}}
+          username: ${{secrets.SERVER_USER}}
+          key: ${{secrets.SERVER_SSH_KEY}}
+          port: ${{secrets.SERVER_PORT}}
           script: |
             cd ~/eye_warmup_bot || mkdir ~/eye_warmup_bot && cd ~/eye_warmup_bot
             docker stop eye_warmup || true
