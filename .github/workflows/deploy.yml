@@ -23,7 +23,6 @@ jobs:
           key: ${{secrets.SERVER_SSH_KEY}}
           port: ${{secrets.SERVER_PORT}}
           script: |
-            set -e
             cd ~/eye_warmup_bot || exit 1
 
             git pull
