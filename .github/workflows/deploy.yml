@@ -1,0 +1,33 @@
+name: deploy.yml
+on:
+  workflow_dispatch:
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build docker image
+        working-directory: ./
+        run: docker build -t my-bot:v1 .
+
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: docker-build
+    steps:
+      - name: SSH Deploy
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{secrets.HOST}}
+          username: ${{secrets.USERNAME}}
+          key: ${{secrets.KEY}}
+          port: ${{secrets.PORT}}
+          script: |
+            cd ~/eye_warmup_bot || mkdir ~/eye_warmup_bot && cd ~/eye_warmup_bot
+            docker stop eye_warmup || true
+            docker rm eye_warmup || true
+            docker rmi eye_warmup:latest || true
+            docker load < <(docker save eye_warmup:ci)
+            docker run -d --name eye_warmup \
+            -e BOT_TOKEN=${{ secrets.BOT_TOKEN }} \
+            eye_warmup:ci
