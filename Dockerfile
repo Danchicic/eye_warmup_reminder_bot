@@ -1,4 +1,4 @@
-FROM python:3.13
+FROM python:3.13 AS my-bot
 WORKDIR /app
 
 COPY pyproject.toml .
