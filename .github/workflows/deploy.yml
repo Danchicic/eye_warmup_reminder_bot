@@ -23,11 +23,17 @@ jobs:
           key: ${{secrets.SERVER_SSH_KEY}}
           port: ${{secrets.SERVER_PORT}}
           script: |
-            cd ~/eye_warmup_bot || mkdir ~/eye_warmup_bot && cd ~/eye_warmup_bot
+            set -e
+            cd ~/eye_warmup_bot || exit 1
+
+            git pull
+
             docker stop eye_warmup || true
             docker rm eye_warmup || true
-            docker rmi eye_warmup:latest || true
-            docker load < <(docker save eye_warmup:ci)
-            docker run -d --name eye_warmup \
-            -e BOT_TOKEN=${{ secrets.BOT_TOKEN }} \
-            eye_warmup:ci
+
+            docker build -t eye_warmup:latest .
+
+            docker run -d --restart unless-stopped \
+              --name eye_warmup \
+              -e BOT_TOKEN=${{ secrets.BOT_TOKEN }} \
+              eye_warmup:latest
