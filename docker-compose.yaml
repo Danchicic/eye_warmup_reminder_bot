@@ -1,0 +1,6 @@
+services:
+  bot:
+    build:
+      context: .
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN}
