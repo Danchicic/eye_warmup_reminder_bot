@@ -3,10 +3,10 @@ import os
 import random
 
 from aiogram import Bot, Dispatcher, Router, F
+from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.filters import CommandStart
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 
 storage = MemoryStorage()
@@ -39,20 +39,18 @@ praise_words = [
     "remarkable",
     "splendid",
     "top-notch",
-    "kudos"
+    "kudos",
 ]
 start_button_kb = ReplyKeyboardMarkup(
-    keyboard=[
-        [KeyboardButton(text=texts['start_day_tracking'])]
-    ]
+    keyboard=[[KeyboardButton(text=texts["start_day_tracking"])]]
 )
 
 check_in_kb = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text=texts['stop_day_tracking'])],
-        [KeyboardButton(text=texts['check_in'])]
+        [KeyboardButton(text=texts["stop_day_tracking"])],
+        [KeyboardButton(text=texts["check_in"])],
     ],
-    resize_keyboard=True
+    resize_keyboard=True,
 )
 
 
@@ -68,7 +66,7 @@ async def handle_start(message: Message):
     await message.reply(text="Working!", reply_markup=start_button_kb)
 
 
-@router.message(F.text == texts['start_day_tracking'])
+@router.message(F.text == texts["start_day_tracking"])
 async def handle_day_start(message: Message, state: FSMContext):
     await message.reply(text="Okay! You start your work day!")
     await state.set_state(FSMEyeChecker.day_pending)
@@ -86,24 +84,32 @@ async def handle_day_start(message: Message, state: FSMContext):
             if (await state.get_state()) == FSMEyeChecker.day_pending:
                 continue
 
-            await bot.send_message(chat_id=chat_id, text="Stand up! And do some warmup!", reply_markup=check_in_kb)
+            await bot.send_message(
+                chat_id=chat_id,
+                text="Stand up! And do some warmup!",
+                reply_markup=check_in_kb,
+            )
         else:
             await asyncio.sleep(60 * 20)
 
             if (await state.get_state()) == FSMEyeChecker.day_stop:
                 break
 
-            await bot.send_message(chat_id=chat_id, text="Stand up! And do some warmup!", reply_markup=check_in_kb)
+            await bot.send_message(
+                chat_id=chat_id,
+                text="Stand up! And do some warmup!",
+                reply_markup=check_in_kb,
+            )
             await state.set_state(FSMEyeChecker.wait_to_check)
 
 
-@router.message(F.text == texts['stop_day_tracking'])
+@router.message(F.text == texts["stop_day_tracking"])
 async def handle_day_stop(message: Message, state: FSMContext):
     await state.set_state(FSMEyeChecker.day_stop)
     await message.reply(text="You successfully stop your eye tracking")
 
 
-@router.message(F.text == texts['check_in'])
+@router.message(F.text == texts["check_in"])
 async def handle_20_check_in(message: Message, state: FSMContext):
     await state.set_state(FSMEyeChecker.day_pending)
 
@@ -111,5 +117,5 @@ async def handle_20_check_in(message: Message, state: FSMContext):
 
 
 dp.include_router(router)
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(dp.start_polling(bot))
