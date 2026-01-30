@@ -7,7 +7,7 @@ from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
@@ -68,7 +68,7 @@ async def handle_start(message: Message):
 
 @router.message(F.text == texts["start_day_tracking"])
 async def handle_day_start(message: Message, state: FSMContext):
-    await message.reply(text="Okay! You start your work day!")
+    await message.reply(text="Okay! You start your work day!", reply_markup=ReplyKeyboardRemove())
     await state.set_state(FSMEyeChecker.day_pending)
     chat_id = message.chat.id
     while True:
