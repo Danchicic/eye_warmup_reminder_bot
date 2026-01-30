@@ -90,7 +90,7 @@ async def handle_day_start(message: Message, state: FSMContext):
                 reply_markup=check_in_kb,
             )
         else:
-            await asyncio.sleep(60 * 20)
+            await asyncio.sleep(60 * 21)
 
             if (await state.get_state()) == FSMEyeChecker.day_stop:
                 break
@@ -106,7 +106,7 @@ async def handle_day_start(message: Message, state: FSMContext):
 @router.message(F.text == texts["stop_day_tracking"])
 async def handle_day_stop(message: Message, state: FSMContext):
     await state.set_state(FSMEyeChecker.day_stop)
-    await message.reply(text="You successfully stop your eye tracking")
+    await message.reply(text="You successfully stop your eye tracking", reply_markup=start_button_kb)
 
 
 @router.message(F.text == texts["check_in"])
